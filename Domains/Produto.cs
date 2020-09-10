@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace Efcore.Domains
 {
-    public class Produto
-    {
-        [Key]
-        public Guid Id { get; set; }
+    public class Produto : BaseDomain
+    {       
         public string Nome { get; set; }
         public float Preco { get; set; }
 
-        public Produto()
-        {
-            Id = Guid.NewGuid();
-        }
     }
 }
