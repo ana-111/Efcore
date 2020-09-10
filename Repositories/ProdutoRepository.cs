@@ -35,8 +35,8 @@ namespace Efcore.Repositories
         {
             try
             {
-                Produto produto = _ctx.Produtos.Find(id);
-                return produto;
+                return _ctx.Produtos.Find(id);
+                
             }
             catch (Exception ex)
             {
@@ -48,6 +48,7 @@ namespace Efcore.Repositories
         {
              try
             {
+                
                 List<Produto> produtos = _ctx.Produtos.Where(c => c.Nome.Contains(nome)).ToList();
               
                 return produtos;
@@ -64,8 +65,8 @@ namespace Efcore.Repositories
             {
                 Produto produtoTemp = BuscarPorId(produto.Id);
 
-                if (produtoTemp == null)
-                    throw new Exception("Produto não encontrado");
+                //if (produtoTemp == null)
+                 // throw new Exception("Produto não encontrado");
 
                 //Alterar as propiedades do produto
                 produtoTemp.Nome = produto.Nome;
@@ -73,7 +74,6 @@ namespace Efcore.Repositories
 
                 //Alterar o produto no contexto
                 _ctx.Produtos.Update(produtoTemp);
-
                 //Salvar o produto
                 _ctx.SaveChanges();
 
@@ -108,9 +108,10 @@ namespace Efcore.Repositories
                 Produto produto = BuscarPorId(id);
 
                 if (produto == null)
-                    throw new Exception("Id não encontrado");
+                    throw new Exception("Produto não encontrado");
 
                 _ctx.Produtos.Remove(produto);
+                _ctx.SaveChanges();
             }
             catch (Exception ex)
             {

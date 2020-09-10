@@ -22,34 +22,107 @@ namespace Efcore.Controllers
         }
 
         [HttpGet]
-        public List<Produto> Get()
+        public IActionResult Get()
         {
-            return _produtoRepository.Listar();
+            try
+            {
+                //Listar os produtos no repositorio
+                var produtos = _produtoRepository.Listar();
+
+                //Verificar se existe produtos, se não existir ira retornar Sem Conteudo
+                if (produtos.Count == 0)
+                    return NoContent();
+
+                //Se existir retornara ok
+                return Ok(produtos);
+            }
+            catch(Exception ex)
+            {
+                //Se dar algum erro retornara BadRequest e uma mensagem de erro
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")]
-        public Produto Get(Guid id)
+        public IActionResult Get(Guid id)
         {
-            return _produtoRepository.BuscarPorId(id);
+            try
+            {
+                //buscar produto no repositorio
+                Produto produto = _produtoRepository.BuscarPorId(id);
+
+                //verificar se o produto existe, caso não exista retornar com NotFund
+                if (produto == null)
+                    return NotFound();
+
+                //caso o produto exista retornara ok junto com os dados do produto
+                return Ok(produto);
+            }
+            catch (Exception ex)
+            {
+                //se ocorrer algum erro retornara Badrequest com a mensagem de erro 
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
-        public void Post(Produto produto)
+        public IActionResult Post(Produto produto)
         {
-            _produtoRepository.Adicionar(produto);
+            try
+            {
+                //add um produto
+                _produtoRepository.Adicionar(produto);
+
+                //retornar ok com os dados do produto
+                return Ok(produto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
-        public void Put(Guid id, Produto produto)
+        public IActionResult Put(Guid id, Produto produto)
         {
-            produto.Id = id;
-            _produtoRepository.Editar(produto);
+            try
+            {
+                var produtoTemp = _produtoRepository.BuscarPorId(id);
+
+                if (produtoTemp == null)
+                    return NotFound();
+
+                produto.Id = id;
+                _produtoRepository.Editar(produto);
+
+                return Ok(produto);
+            }
+
+            catch (Exception ex)
+            {
+                //se ocorrer algum erro retornara Badrequest com a mensagem de erro 
+                return BadRequest(ex.Message);
+            }
+
+
         }
 
         [HttpDelete("{id}")]
-        public void Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            _produtoRepository.Remover(id);
+            try
+            {
+
+                _produtoRepository.Remover(id);
+
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                //se ocorrer algum erro retornara Badrequest com a mensagem de erro 
+                return BadRequest(ex.Message);
+            }
         }
 
 
