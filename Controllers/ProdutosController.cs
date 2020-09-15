@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Efcore.Domains;
 using Efcore.Interfaces;
 using Efcore.Repositories;
+using Efcore.Utlls;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,12 +36,19 @@ namespace Efcore.Controllers
                     return NoContent();
 
                 //Se existir retornara ok
-                return Ok(produtos);
+                return Ok(new {
+                    totalCount = produtos.Count,
+                    data = produtos
+                });
             }
             catch(Exception ex)
             {
                 //Se dar algum erro retornara BadRequest e uma mensagem de erro
-                return BadRequest(ex.Message);
+                return BadRequest(new {
+                    StatusCode = 400,
+                    error = ex.Message
+                }
+                    );
             }
             
         }
@@ -67,14 +76,22 @@ namespace Efcore.Controllers
         }
 
         [HttpGet]
-        public IActionResult Post(Produto produto)
+        public IActionResult Post([FromForm] Produto produto)
         {
             try
             {
-                //add um produto
+                if (produto.Imagem != null)
+                {
+                    var urlImagem = Upload.Local(produto.Imagem);
+
+                    produto.UrlImagem = urlImagem;
+                }
+
+
+                // Adiciona um produto
                 _produtoRepository.Adicionar(produto);
 
-                //retornar ok com os dados do produto
+                // retorna ok com os dados do produto
                 return Ok(produto);
             }
             catch (Exception ex)
