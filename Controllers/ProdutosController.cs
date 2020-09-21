@@ -65,8 +65,13 @@ namespace Efcore.Controllers
                 if (produto == null)
                     return NotFound();
 
+                Moeda dolar = new Moeda();
+
                 //caso o produto exista retornara ok junto com os dados do produto
-                return Ok(produto);
+                return Ok(new {
+                    produto, 
+                    valorDolar = dolar.GetDolarValue() * produto.Preco   
+                });
             }
             catch (Exception ex)
             {
